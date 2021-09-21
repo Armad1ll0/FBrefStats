@@ -80,6 +80,13 @@ price_df = pd.DataFrame({'Name': name_list,
                            'Value': value_list,
                             })
 
+#converting this data to a csv, makes it easier to import later 
+price_df.to_csv('transfermarkt_prices.csv')
+
+#%%
+#loading in the csv to use later 
+price_df = pd.read_csv('transfermarkt_prices.csv')
+
 #%%
 #loading in the stats dataframe 
 import numpy as np 
@@ -122,6 +129,20 @@ for index, row in per_90_stats.iterrows():
 #merging the price and stats data frames together where the names exactly match 
 merged = pd.merge(per_90_2020_2021_stats, right=price_df, left_on='player', right_on='Name')
 #problem with the above is we miss out quite a lot of players (reduces from 2822 to 2145) 
+
+#%%
+#creating seperate dataframes based on position
+#NOTE: these don't take into account players with multiple possible positions 
+goalkeeper_per_90 = per_90_2020_2021_stats[per_90_2020_2021_stats.position == 'GK']
+defender_per_90 = per_90_2020_2021_stats[per_90_2020_2021_stats.position == 'DF']
+midfielder_per_90 = per_90_2020_2021_stats[per_90_2020_2021_stats.position == 'MF']
+forward_per_90 = per_90_2020_2021_stats[per_90_2020_2021_stats.position == 'FW']
+
+#we miss about 800 entries because of this 
+#print(len(defender_per_90) + len(midfielder_per_90) + len(forward_per_90) + len(goalkeeper_per_90))
+
+#doing a groupby method with dictionarys to see if that makes a difference
+res = dict(tuple(per_90_2020_2021_stats.groupby('position')))
 
 #%%
 #creating a dataframe with players who have played over 5 games 
